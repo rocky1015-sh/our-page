@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthyFit - Your Wellness Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            transform: translateY(-3px);
+        }
+        .bmi-scale {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 20px 0;
+        }
+        .bmi-scale::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(to right, #4ade80, #facc15, #f97316, #ef4444);
+            border-radius: 4px;
+            transform: translateY(-50%);
+        }
+        .bmi-category {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            padding-top: 20px;
+        }
+        .workout-card {
+            transition: all 0.3s ease;
+        }
+        .workout-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Login Section -->
+    <section id="login-section" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-green-600 py-8 px-6 text-center">
+                <h1 class="text-3xl font-bold text-white">HealthyFit</h1>
+                <p class="text-green-100 mt-2">Your personal fitness and wellness companion</p>
+            </div>
+            <div class="p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Login to Your Account</h2>
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 font-medium">Login</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Don't have an account? <a href="#" class="text-green-600 hover:underline">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main App (Initially Hidden) -->
+    <div id="app" class="hidden">
+        <!-- Header/Navigation -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <img src="https://i.imgur.com/H944vyj.jpeg" alt="HealthyFit logo - A stylized green leaf with a heart in the center" class="h-8 w-8 mr-2">
+                            <span class="text-xl font-bold text-green-600">HealthyFit</span>
+                        </div>
+                        <nav class="hidden md:ml-10 md:flex space-x-8">
+                            <a href="#" data-section="home" class="nav-link text-green-600 border-green-500 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                            <a href="#" data-section="bmi" class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">BMI Calculator</a>
+                            <a href="#" data-section="fitness" class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">Fitness & Wellness</a>
+                            <a href="#" data-section="workouts" class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">Workouts</a>
+                            <a href="#" data-section="benefits" class="nav-link text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">Benefits</a>
+                        </nav>
+                    </div>
+                    <div class="hidden md:ml-4 md:flex items-center md:shrink-0">
+                        <button id="logout-btn" class="ml-4 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Logout
+                        </button>
+                    </div>
+                    <div class="-mr-2 flex items-center md:hidden">
+                        <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <div class="pt-2 pb-3 space-y-1">
+                    <a href="#" data-section="home" class="nav-link bg-green-50 border-green-500 text-green-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                    <a href="#" data-section="bmi" class="nav-link border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">BMI Calculator</a>
+                    <a href="#" data-section="fitness" class="nav-link border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Fitness & Wellness</a>
+                    <a href="#" data-section="workouts" class="nav-link border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Workouts</a>
+                    <a href="#" data-section="benefits" class="nav-link border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Benefits</a>
+                    <a href="#" id="mobile-logout" class="nav-link border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Home Section -->
+            <section id="home" class="section fade-in">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <div class="md:w-1/2">
+                                    <img src="https://i.imgur.com/H944vyj.jpeg">
+                                </div>
+                                <div class="md:w-1/2">
+                                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Welcome to HealthyFit</h2>
+                                    <p class="text-gray-600 mb-4">
+                                        Your personalized fitness and wellness companion designed to help you achieve your health goals. 
+                                        Whether you're looking to lose weight, build muscle, or simply maintain a healthier lifestyle, 
+                                        HealthyFit provides the tools and resources you need.
+                                    </p>
+                                    <p class="text-gray-600 mb-6">
+                                        Get started by calculating your BMI to understand your current health status, explore our workout 
+                                        programs, and learn about the benefits of maintaining a healthy lifestyle.
+                                    </p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <a href="#" data-section="bmi" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 font-medium">Calculate BMI</a>
+                                        <a href="#" data-section="workouts" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-200 font-medium">Explore Workouts</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjW0elgBMZZa9ORE0YNqtUrKARVFgtx2uREw&s" alt="Icon of a heart with pulse lines indicating health monitoring" class="h-6 w-6 text-green-600">
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900">Health Monitoring</h3>
+                                        <p class="text-sm text-gray-500">Track your BMI and health metrics</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX1e-XAJr_ZCugLcofp1DwfRCSHtzeIzy7pQ&s" alt="Icon of a dumbbell representing workout equipment" class="h-6 w-6 text-blue-600">
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900">Custom Workouts</h3>
+                                        <p class="text-sm text-gray-500">Tailored exercises for your goals</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
+                                        <img src="https://i.pinimg.com/736x/18/77/ef/1877ef5906d9969d4600706addbf70ad.jpg" alt="Icon of a meditating person representing wellness" class="h-6 w-6 text-purple-600">
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900">Wellness Tips</h3>
+                                        <p class="text-sm text-gray-500">Improve your mental and physical health</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BMI Calculator Section -->
+            <section id="bmi" class="section hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-6">BMI Calculator</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <form id="bmi-form" class="space-y-6">
+                                        <div>
+                                            <label for="height" class="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+                                            <input type="number" id="height" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                                        </div>
+                                        <div>
+                                            <label for="weight" class="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                                            <input type="number" id="weight" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                                        </div>
+                                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 font-medium">Calculate BMI</button>
+                                    </form>
+                                </div>
+                                <div>
+                                    <div id="bmi-result" class="bg-gray-50 p-6 rounded-lg h-full flex flex-col items-center justify-center">
+                                        <img src="https://lirp.cdn-website.com/69c0b277/dms3rep/multi/opt/BMI+levels-640w.jpg" alt="Illustration of a person standing on scales with BMI chart in the background" class="mb-4 w-40 h-40">
+                                        <p class="text-gray-600 text-center">Enter your height and weight to calculate your BMI and receive personalized health insights.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4">BMI Categories</h3>
+                                <div class="bmi-scale">
+                                    <div class="bmi-category">
+                                        <div class="text-xs font-medium text-green-700">Underweight</div>
+                                        <div class="text-xs">Below 18.5</div>
+                                    </div>
+                                    <div class="bmi-category">
+                                        <div class="text-xs font-medium text-green-500">Healthy</div>
+                                        <div class="text-xs">18.5 - 24.9</div>
+                                    </div>
+                                    <div class="bmi-category">
+                                        <div class="text-xs font-medium text-yellow-500">Overweight</div>
+                                        <div class="text-xs">25 - 29.9</div>
+                                    </div>
+                                    <div class="bmi-category">
+                                        <div class="text-xs font-medium text-red-500">Obese</div>
+                                        <div class="text-xs">30 and above</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fitness & Wellness Section -->
+            <section id="fitness" class="section hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-6">Fitness & Wellness</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8j6htcL40ZNkrAdxS4Nq0kY-j0mjsoBZVjQ&s" alt="Person meditating in a peaceful outdoor setting with trees and sunlight" class="w-full h-auto rounded-lg mb-6">
+                                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">Mindfulness and Meditation</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Incorporate mindfulness practices into your daily routine to reduce stress and improve mental clarity. 
+                                        Just 10 minutes of meditation per day can have significant benefits for your mental health.
+                                    </p>
+                                    <p class="text-gray-600">
+                                        Our guided meditation programs help you build a consistent practice, improve sleep quality, 
+                                        and enhance your overall sense of well-being.
+                                    </p>
+                                </div>
+                                <div>
+                                    <img src="https://cdn-wordpress-info.futurelearn.com/info/wp-content/uploads/9d3398fe-83ba-4424-a424-868581f99cbf-1.png" alt="Colorful spread of healthy foods including fruits, vegetables, and whole grains" class="w-full h-auto rounded-lg mb-6">
+                                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">Nutrition Guidance</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        A balanced diet is the foundation of good health. We provide personalized nutrition plans based on 
+                                        your dietary preferences, health goals, and any specific requirements.
+                                    </p>
+                                    <p class="text-gray-600">
+                                        Learn about macronutrients, portion control, and how to make sustainable dietary changes that 
+                                        support your fitness journey and overall health.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7YTBZe0j-qsHaC3dSSFISWWFccPLL0T-wrA&s" alt="Icon of a water droplet representing hydration" class="h-10 w-10 mb-4">
+                                    <h4 class="text-lg font-medium text-gray-900 mb-2">Hydration</h4>
+                                    <p class="text-gray-600 text-sm">
+                                        Proper hydration is essential for performance and recovery. Learn how much water you need and tips to stay hydrated.
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <img src="https://edasuk.org/files/cache/fef3e615d030532627bc495db5763cb5_f508.png" alt="Icon of a moon with stars representing sleep" class="h-10 w-10 mb-4">
+                                    <h4 class="text-lg font-medium text-gray-900 mb-2">Sleep Quality</h4>
+                                    <p class="text-gray-600 text-sm">
+                                        Discover strategies to improve your sleep patterns and understand the critical role of rest in fitness gains.
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <img src="https://www.acls.net/images/heart-health.svg" alt="Icon of a heart rate monitor representing cardiovascular health" class="h-10 w-10 mb-4">
+                                    <h4 class="text-lg font-medium text-gray-900 mb-2">Heart Health</h4>
+                                    <p class="text-gray-600 text-sm">
+                                        Cardiovascular exercise is key to long-term health. Get recommendations for heart-healthy activities.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workouts Section -->
+            <section id="workouts" class="section hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-6">Workout Programs</h2>
+                            <p class="text-gray-600 mb-8">
+                                Choose from our expertly designed workout programs based on your fitness level and goals. 
+                                Whether you're a beginner or an experienced athlete, we have routines to challenge you.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="workout-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md">
+                                    <img src="https://www.nourishmovelove.com/wp-content/uploads/2024/11/BeginnerCalendar_3Days.jpg" alt="Person performing squats with proper form in a gym setting" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Beginner Strength</h3>
+                                        <p class="text-gray-600 text-sm mb-4">
+                                            A 4-week foundational program to build strength and learn proper form for essential exercises.
+                                        </p>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-500 text-xs">3x/week • 30 min</span>
+                                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">View Program</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="workout-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md">
+                                    <img src="https://acko-cms.ackoassets.com/Best_Cardio_Exercises_For_Weight_Loss_ed0224a54c.png" alt="Runner in action on a scenic outdoor trail with hills" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Cardio Burn</h3>
+                                        <p class="text-gray-600 text-sm mb-4">
+                                            Boost your endurance with this high-energy cardio routine combining running, cycling, and HIIT.
+                                        </p>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-500 text-xs">4x/week • 45 min</span>
+                                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">View Program</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="workout-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md">
+                                    <img src="https://imgv2-1-f.scribdassets.com/img/document/446295994/original/28ef78d743/1?v=1" alt="Advanced weightlifter performing a deadlift with perfect technique" class="w-full h-48 object-cover">
+                                    <div class="p-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Advanced Powerlifting</h3>
+                                        <p class="text-gray-600 text-sm mb-4">
+                                            For experienced lifters focusing on increasing squat, bench press, and deadlift one-rep maxes.
+                                        </p>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-500 text-xs">5x/week • 60 min</span>
+                                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">View Program</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-12">
+                                <h3 class="text-2xl font-semibold text-gray-900 mb-6">Tutorials</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-gray-100 rounded-lg overflow-hidden">
+                                        <div class="aspect-w-16 aspect-h-9">
+                                            <img src="https://content.artofmanliness.com/uploads/2020/11/Pushup-Re-do-1.jpg">
+                                        </div>
+                                        <div class="p-4">
+                                            <h4 class="text-lg font-medium text-gray-900 mb-1">Perfect Push-Up Form</h4>
+                                            <p class="text-gray-600 text-sm">Learn the correct technique to maximize chest activation and prevent injury.</p>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-100 rounded-lg overflow-hidden">
+                                        <div class="aspect-w-16 aspect-h-9">
+                                            <img src="https://cloudimages.myyogateacher.com/dgerdfai4/image/upload/q_auto,w_960,ar_1.5,r_10,c_pad,f_auto/v1572073938/blog/posts/ph9pqmx0xrr8zask8m8j.png" alt="Yoga instructor demonstrating a sun salutation sequence" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="p-4">
+                                            <h4 class="text-lg font-medium text-gray-900 mb-1">Yoga for Flexibility</h4>
+                                            <p class="text-gray-600 text-sm">Sun salutation sequence to improve mobility and reduce muscle stiffness.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Benefits Section -->
+            <section id="benefits" class="section hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-6">Health Benefits</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <img src="https://i.imgur.com/T7u0Bpv.jpeg" alt="Senior couple jogging happily in a park during autumn" class="w-full h-auto rounded-lg mb-6">
+                                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">Long-term Health Advantages</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Regular physical activity and proper nutrition significantly reduce the risk of chronic diseases 
+                                        including heart disease, diabetes, and certain cancers. Maintaining a healthy lifestyle can add 
+                                        years to your life and life to your years.
+                                    </p>
+                                    <ul class="list-disc pl-5 text-gray-600 space-y-2">
+                                        <li>Up to 50% lower risk of type 2 diabetes</li>
+                                        <li>35% lower risk of coronary heart disease and stroke</li>
+                                        <li>Reduced symptoms of depression and anxiety</li>
+                                        <li>Stronger bones and reduced risk of osteoporosis</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <img src="https://i.imgur.com/0LlexQP.jpeg" alt="Business person with high energy presenting in a meeting, appearing confident" class="w-full h-auto rounded-lg mb-6">
+                                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">Mental & Cognitive Benefits</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Exercise isn't just about physical health - it's one of the most effective ways to boost brain function. 
+                                        Regular activity has been shown to improve memory, focus, and overall cognitive performance.
+                                    </p>
+                                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                                        <h4 class="font-medium text-blue-800 mb-2">Did You Know?</h4>
+                                        <p class="text-blue-700">
+                                            Just 30 minutes of moderate exercise increases hippocampus volume (memory center of the brain) 
+                                            and enhances creativity and problem-solving skills.
+                                        </p>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 mt-6">
+                                        <div class="bg-green-50 p-3 rounded-lg">
+                                            <h4 class="font-medium text-green-800 mb-1">Stress Reduction</h4>
+                                            <p class="text-green-700 text-sm">Exercise lowers cortisol levels by 30-40%</p>
+                                        </div>
+                                        <div class="bg-purple-50 p-3 rounded-lg">
+                                            <h4 class="font-medium text-purple-800 mb-1">Mood Boost</h4>
+                                            <p class="text-purple-700 text-sm">Releases endorphins that improve happiness</p>
+                                        </div>
+                                        <div class="bg-yellow-50 p-3 rounded-lg">
+                                            <h4 class="font-medium text-yellow-800 mb-1">Energy Levels</h4>
+                                            <p class="text-yellow-700 text-sm">Increases mitochondrial production by 49%</p>
+                                        </div>
+                                        <div class="bg-red-50 p-3 rounded-lg">
+                                            <h4 class="font-medium text-red-800 mb-1">Sleep Quality</h4>
+                                            <p class="text-red-700 text-sm">Falls asleep 15 min faster on exercise days</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white mt-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 class="text-lg font-medium mb-4">HealthyFit</h3>
+                        <p class="text-gray-300 text-sm">
+                            Your comprehensive fitness and wellness platform helping you achieve your health goals through personalized plans and expert guidance.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium mb-4">Quick Links</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li><a href="#" data-section="home" class="hover:text-green-400 transition">Home</a></li>
+                            <li><a href="#" data-section="bmi" class="hover:text-green-400 transition">BMI Calculator</a></li>
+                            <li><a href="#" data-section="fitness" class="hover:text-green-400 transition">Fitness & Wellness</a></li>
+                            <li><a href="#" data-section="workouts" class="hover:text-green-400 transition">Workouts</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium mb-4">Resources</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li><a href="#" class="hover:text-green-400 transition">Blog</a></li>
+                            <li><a href="#" class="hover:text-green-400 transition">Recipes</a></li>
+                            <li><a href="#" class="hover:text-green-400 transition">Community</a></li>
+                            <li><a href="#" class="hover:text-green-400 transition">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium mb-4">Contact</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li>info@healthyfit.com</li>
+                            <li>+1 (555) 123-4567</li>
+                            <li>123 Fitness Lane, Health City</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+                    <p>© 2023 HealthyFit. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Login functionality
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // In a real app, you would validate credentials with a server
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            showSection('home');
+        });
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            // Clear form
+            document.getElementById('login-form').reset();
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Mobile logout
+        document.getElementById('mobile-logout').addEventListener('click', function() {
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+            // Clear form
+            document.getElementById('login-form').reset();
+            // Close mobile menu
+            document.getElementById('mobile-menu').classList.add('hidden');
+        });
+
+        // Navigation functionality
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById(sectionId).classList.add('fade-in');
+            
+            // Update active nav links
+            document.querySelectorAll('nav a').forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+                    link.classList.add('text-green-600', 'border-green-500');
+                } else {
+                    link.classList.remove('text-green-600', 'border-green-500');
+                    link.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'border-transparent');
+                }
+            });
+            
+            // Update mobile nav links
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+                    link.classList.remove('border-transparent', 'text-gray-600', 'hover:bg-gray-50', 'hover:border-gray-300', 'hover:text-gray-800');
+                } else {
+                    link.classList.remove('bg-green-50', 'border-green-500', 'text-green-700');
+                    link.classList.add('border-transparent', 'text-gray-600', 'hover:bg-gray-50', 'hover:border-gray-300', 'hover:text-gray-800');
+                }
+            });
+        }
+
+        // Set up nav link event listeners
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.dataset.section;
+                showSection(sectionId);
+                
+                // Close mobile menu if open
+                if (this.closest('#mobile-menu')) {
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // BMI Calculator
+        document.getElementById('bmi-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const height = parseFloat(document.getElementById('height').value) / 100; // Convert cm to m
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height <= 0 || weight <= 0) {
+                alert('Please enter valid height and weight values.');
+                return;
+            }
+            
+            const bmi = weight / (height * height);
+            let category, advice, color;
+            
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                advice = 'Consider consulting a nutritionist to develop a healthy weight gain plan.';
+                color = 'text-green-600';
+            } else if (bmi >= 18.5 && bmi < 25) {
+                category = 'Normal weight';
+                advice = 'You have a healthy weight. Keep up the good work!';
+                color = 'text-green-500';
+            } else if (bmi >= 25 && bmi < 30) {
+                category = 'Overweight';
+                advice = 'Consider increasing physical activity and improving dietary habits.';
+                color = 'text-yellow-500';
+            } else {
+                category = 'Obese';
+                advice = 'We recommend consulting with a healthcare provider for personalized advice.';
+                color = 'text-red-500';
+            }
+            
+            document.getElementById('bmi-result').innerHTML = `
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2 ${color}">${bmi.toFixed(1)}</div>
+                    <div class="text-xl font-medium mb-2">${category}</div>
+                    <p class="text-gray-600 max-w-sm">${advice}</p>
+                    <div class="mt-4 grid grid-cols-2 gap-2 text-left">
+                        <div>
+                            <div class="text-sm text-gray-500">Height</div>
+                            <div class="font-medium">${(height*100).toFixed(0)} cm</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500">Weight</div>
+                            <div class="font-medium">${weight.toFixed(0)} kg</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
